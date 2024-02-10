@@ -19,8 +19,7 @@ lcd = MraaIli9341(
     dcx_pin_id=3, # DS pin.
     rst_pin_id=5, # RESET pin.
     spi_clock_hz=25000000,
-    spi_data_chunk_size=2048,
-    madctl_cmd_val=ILI9341_MADCTL_BGR_MODE)
+    spi_data_chunk_size=2048)
 
 # Clear the screen to white.
 lcd.clear((0xFF, 0xFF, 0xFF))
@@ -29,5 +28,3 @@ lcd.clear((0xFF, 0xFF, 0xFF))
 lcd.framebuff[10:20, 10:40, :] = (0xFF, 0, 0)
 lcd.update()
 ```
-
-"""
