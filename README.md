@@ -1,4 +1,4 @@
-# Mraa based ILI9341 LCD Display driver in Python
+# Mraa based ILI9341 LCD display driver in pure python
 
 This library implements a pure python driver for spi-connected ILI9341 LCD
 display, using `mraa` GPIO library. It takes inspiration from
