@@ -297,7 +297,7 @@ class MraaIli9341(object):
         # Prepare blue channel.
         self._workbuff[:, :, 2] >>= 3
 
-        # Marge all three channels in red buffer.
+        # Merge all three channels in red buffer.
         self._workbuff[:, :, 0] |= self._workbuff[:, :, 1]
         self._workbuff[:, :, 0] |= self._workbuff[:, :, 2]
 
