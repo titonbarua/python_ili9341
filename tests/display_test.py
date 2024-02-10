@@ -130,19 +130,6 @@ def test_draw_random_boxes(lcd, fps=60, duration=10, size=50):
         i += 1
 
 
-
-def run_tests():
-    lcd = MraaIli9341(
-        spi_id=0,
-        dcx_pin_id=3,
-        rst_pin_id=5,
-        spi_clock_hz=25000000,
-        spi_data_chunk_size=2048)
-
-    lcd.clear((0xFF, 0xFF, 0xFF))
-
-
-
 if __name__ == "__main__":
     lcd = MraaIli9341(
         spi_id=0,
