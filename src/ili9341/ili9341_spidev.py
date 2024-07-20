@@ -27,7 +27,7 @@ class Ili9341Spidev(Ili9341Base):
             rst_pin_id=None,
             spi_clock_hz=64000000,
             **kwargs):
-        """Initialize Ili9341Mraa class."""
+        """Initialize Ili9341Spidev class."""
         # Create SPI device.
         self._spi = spidev.SpiDev()
         self._spi.open(spidev_bus_no, spidev_device_no)

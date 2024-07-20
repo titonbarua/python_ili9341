@@ -1,11 +1,8 @@
-import sys
-sys.path.append("../src/")
-
-from mraa_ili9341 import MraaIli9341, ILI9341_TFTWIDTH, ILI9341_TFTHEIGHT
 import cv2
 import time
 import random
 
+from ili9341.ili9341_base import ILI9341_TFTWIDTH, ILI9341_TFTHEIGHT
 
 TEST_RGB_COLORS = {
     "RED": (255, 0, 0),
