@@ -50,7 +50,7 @@ class Ili9341Spidev(Ili9341Base):
     def _spi_write(self, buff):
         self._spi.writebytes2(buff)
 
-    def _switch_to_control_mode(self):
+    def _switch_to_ctrl_mode(self):
         self._dcx_pin.write(gpio.LOW)
 
     def _switch_to_data_mode(self):
