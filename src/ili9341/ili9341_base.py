@@ -119,7 +119,7 @@ class Ili9341Base(object):
         (<height>, <width>, <rgb-color>)
 
         """
-        return self._frame_buffer
+        return self._framebuff
 
     @framebuff.setter
     def framebuff(self, new_buff):
@@ -127,7 +127,7 @@ class Ili9341Base(object):
         new_buff = np.array(new_buff, dtype=np.uint8).reshape(
             (self._height, self._width, 3))
 
-        self._frame_buffer = new_buff
+        self._framebuff = new_buff
 
     def _spi_write(self, buff):
         raise NotImplementedError
