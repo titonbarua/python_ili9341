@@ -33,7 +33,7 @@ class Ili9341Spidev(Ili9341Base):
         self._spi.open(spidev_bus_no, spidev_device_no)
 
         self._spi.mode = 0b00  # SPI mode 0.
-        self._spi.lsbmode = True  # MSB first.
+        self._spi.lsbfirst = False  # MSB first.
         self._spi.max_speed_hz = spi_clock_hz
 
         # Create GPIO interface for data/control select line.

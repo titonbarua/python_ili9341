@@ -1,2 +1,3 @@
 spidev~=3.6
 gpio~=1.0.0
+numpy
