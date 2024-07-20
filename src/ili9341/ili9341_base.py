@@ -1,14 +1,10 @@
 """
-This module implements a pure python driver for spi-connected ILI9341 LCD display, using `mraa` GPIO library.
+This module implements a pure python driver for spi-connected ILI9341 LCD display.
 """
-
 
 import numpy as np
 import math
 import time
-
-import mraa
-
 
 # Constants for interacting with display registers.
 ILI9341_TFTWIDTH    = 320
@@ -87,83 +83,90 @@ ILI9341_YELLOW      = 0xFFE0
 ILI9341_WHITE       = 0xFFFF
 
 
+class Ili9341Base(object):
+    """IO library agnostic base class for controlling ILI9341 SPI displays."""
 
-class MraaIli9341(object):
     def __init__(
             self,
-            spi_id,
-            dcx_pin_id,
-            rst_pin_id=None,
-            spi_clock_hz=64000000,
             spi_data_chunk_size=2048,
             partial_update_merge_dist=5,
-            madctl_cmd_val=ILI9341_MADCTL_BGR_MODE,
-            initialize=True
-        ):
+            madctl_cmd_val=ILI9341_MADCTL_BGR_MODE):
+        """Initialize Ili9341Base class."""
         self._height = ILI9341_TFTHEIGHT
         self._width = ILI9341_TFTWIDTH
         self._spi_data_chunk_size = spi_data_chunk_size
         self._partial_update_merge_dist = partial_update_merge_dist
         self._madctl_cmd_val = madctl_cmd_val
 
-        # Create SPI device.
-        self._spi = mraa.Spi(spi_id)
-        self._spi.mode(0) # SPI mode 0.
-        self._spi.lsbmode(False) # MSB first.
-        self._spi.frequency(spi_clock_hz)
-
-        # Create GPIO interface for data/control select line.
-        self._dcx_pin = mraa.Gpio(dcx_pin_id)
-        self._dcx_pin.dir(mraa.DIR_OUT)
-
-        # Create GPIO interface for reset line, if given.
-        if rst_pin_id:
-            self._rst_pin = mraa.Gpio(rst_pin_id)
-            self._rst_pin.dir(mraa.DIR_OUT)
-        else:
-            self._rst_pin = None
+        self._buffer_shape = (self._height, self._width, 3)
 
         # The framebuffer to display.
-        self.framebuff = np.zeros(
-            self._height * self._width * 3,
-            dtype=np.uint8).reshape((self._height, self._width, 3))
+        self._framebuff = np.zeros(self._buffer_shape, dtype=np.uint8)
 
         # Create an array as a sketch pad for color conversion.
-        self._workbuff = np.zeros(
-            self._height * self._width * 3,
-            dtype=np.uint16).reshape((self._height, self._width, 3))
+        self._workbuff = np.zeros(self._buffer_shape, dtype=np.uint16)
 
         self._old_data = None
 
-        if initialize:
-            self.reset()
-            self.init()
+        self._do_hardware_reset()
+        self.init_display()
 
+    @property
+    def framebuff(self):
+        """A numpy array to hold pixel values.
+
+        User should modify pixel values directly using this. The layout is:
+        (<height>, <width>, <rgb-color>)
+
+        """
+        return self._frame_buffer
+
+    @framebuff.setter
+    def framebuff(self, new_buff):
+        # Convert buffer to an array, if necessary.
+        new_buff = np.array(new_buff, dtype=np.uint8).reshape(
+            (self._height, self._width, 3))
+
+        self._frame_buffer = new_buff
+
+    def _spi_write(self, buff):
+        raise NotImplementedError
+
+    def _switch_to_ctrl_mode(self):
+        raise NotImplementedError
+
+    def _switch_to_data_mode(self):
+        raise NotImplementedError
+
+    def _do_hardware_reset(self):
+        raise NotImplementedError
 
     def send_cmd(self, buff):
         """Send a composite command.
 
-        The first byte is assumed to be a command. Rest of the bytes are assumed to be data."""
+        The first byte is assumed to be a command. Rest of the bytes are
+        assumed to be data.
+
+        """
         buff = bytearray(buff)
 
         # Send the command byte.
-        self._dcx_pin.write(0)
-        self._spi.writeByte(buff[0])
+        self._switch_to_ctrl_mode()
+        self._spi_write(buff[:1])
 
         # Send the data that comes after command in chunks.
         # -----------------------------------------------------,
-        self._dcx_pin.write(1)
+        self._switch_to_data_mode()
         s = self._spi_data_chunk_size
         n_chunks = math.ceil(len(buff[1:]) / s)
 
         i = 0
         while i < n_chunks:
-            self._spi.write(buff[(1 + i * s):(1 + (i + 1) * s)])
+            self._spi_write(buff[(1 + i * s):(1 + (i + 1) * s)])
             i += 1
         # -----------------------------------------------------'
 
-
-    def init(self):
+    def init_display(self):
         """Initialize the display."""
         init_cmd_list = [
             bytearray([ILI9341_DISPOFF]),
@@ -199,21 +202,11 @@ class MraaIli9341(object):
         time.sleep(0.120)
         self.send_cmd(bytearray([ILI9341_DISPON]))
 
-
     def reset(self, soft=True):
         """Reset the display."""
-
-        # Do a hardware reset if reset pin is connected. Else, do a software reset.
-        if self._rst_pin is not None:
-            self._rst_pin.write(1)
-            time.sleep(0.005)
-            self._rst_pin.write(0)
-            time.sleep(0.02)
-            self._rst_pin.write(1)
-            time.sleep(0.150)
-        else:
-            self.send_cmd(bytearray([ILI9341_SWRESET]))
-
+        # Do a hardware reset if possible before a software reset.
+        self._do_hardware_reset()
+        self.send_cmd(bytearray([ILI9341_SWRESET]))
 
     def _find_updated_cols(self, top, bot, diff):
         areas = []
@@ -237,7 +230,6 @@ class MraaIli9341(object):
 
         return areas
 
-
     def _find_updated_rows(self, diff):
         areas = []
         rows = np.where(diff.sum(axis=1) > 0)[0]
@@ -258,14 +250,12 @@ class MraaIli9341(object):
 
         return areas
 
-
     def _find_updated_areas(self, old_data, new_data):
         if self._old_data is None:
             return [(0, 0, self._width - 1, self._height - 1)]
 
         diff = new_data != old_data
         return self._find_updated_rows(diff)
-
 
     def _update_partial(self, new_data, x1, y1, x2, y2):
         buff = new_data[
@@ -279,13 +269,13 @@ class MraaIli9341(object):
             bytearray([ILI9341_RAMWR]) +
             bytearray(buff))
 
-
     def update(self):
+        """Update display."""
         # Do color conversion to RGB 565 mode in work buffer.
         # --------------------------------------------------,
         # Copy data from frame buffer to workbuffer.
         self._workbuff[:, :, :] = self.framebuff.astype(np.uint16)
-        
+
         # Prepare red channel.
         self._workbuff[:, :, 0] >>= 3
         self._workbuff[:, :, 0] <<= 11
@@ -309,7 +299,7 @@ class MraaIli9341(object):
         for area in updated_areas:
             self._update_partial(new_data, *area)
 
-
     def clear(self, color=(0, 0, 0)):
+        """Clear display with a specific color."""
         self.framebuff[:, :, :] = color
         self.update()
