@@ -66,7 +66,7 @@ class Ili9341Spidev(Ili9341Base):
                 direction=gpiod.line.Direction.OUTPUT,
                 active_low=True)
 
-        self._line_access = gpiod.request_line(
+        self._line_access = gpiod.request_lines(
             gpiod_device_path,
             consumer="Ili9341Spidev_display_driver",
             config=line_request_config)
