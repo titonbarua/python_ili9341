@@ -9,8 +9,8 @@ from test_procedures import *
 
 def run_test_procedures():
     lcd = Ili9341Spidev(
-        spidev_bus_no=2,
-        spidev_device_no=0,
+        spidev_device_path="/dev/spidev2.0",
+        gpiod_device_path="/dev/gpiochip5",
         dcx_pin_id=23,
         rst_pin_id=None,
         spi_clock_hz=25000000,
