@@ -2,7 +2,6 @@ import sys
 sys.path.append("../src/")
 
 import time
-import sys.argv
 
 from ili9341.ili9341_spidev import Ili9341Spidev
 import test_procedures as tp
