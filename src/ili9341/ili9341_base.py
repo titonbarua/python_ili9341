@@ -108,7 +108,7 @@ class Ili9341Base(object):
 
         self._old_data = None
 
-        self._do_hardware_reset()
+        self.reset()
         self.init_display()
 
     @property
