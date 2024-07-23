@@ -88,5 +88,5 @@ def run_test_procedures(config_name):
 
 
 if __name__ == "__main__":
-    config_name = sys.argv[1] if len(sys.argv) > 1 else "rpi5"
+    config_name = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_HW_CONFIG
     run_test_procedures(config_name)

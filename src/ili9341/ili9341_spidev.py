@@ -61,7 +61,7 @@ class Ili9341Spidev(Ili9341Base):
             )
         }
 
-        if self._rst_pin_id:
+        if self._rst_pin_id is not None:
             line_request_config[self._rst_pin_id] = gpiod.LineSettings(
                 direction=gpiod.line.Direction.OUTPUT,
                 active_low=True)

@@ -31,7 +31,7 @@ class Ili9341Mraa(Ili9341Base):
         self._dcx_pin.dir(mraa.DIR_OUT)
 
         # Create GPIO interface for reset line, if given.
-        if rst_pin_id:
+        if rst_pin_id is not None:
             self._rst_pin = mraa.Gpio(rst_pin_id)
             self._rst_pin.dir(mraa.DIR_OUT)
         else:
