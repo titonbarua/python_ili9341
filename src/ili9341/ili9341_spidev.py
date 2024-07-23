@@ -76,7 +76,7 @@ class Ili9341Spidev(Ili9341Base):
     def __del__(self):
         """Do cleanup."""
         # Release gpio access.
-        self._line_access.close()
+        self._line_access.release()
 
     def _spi_write(self, buff):
         self._spi.writebytes2(buff)
