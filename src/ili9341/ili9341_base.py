@@ -158,12 +158,15 @@ class Ili9341Base(object):
         # -----------------------------------------------------,
         self._switch_to_data_mode()
         s = self._spi_data_chunk_size
-        n_chunks = math.ceil(len(buff[1:]) / s)
 
-        i = 0
-        while i < n_chunks:
-            self._spi_write(buff[(1 + i * s):(1 + (i + 1) * s)])
-            i += 1
+        if s > 0:
+            n_chunks = math.ceil(len(buff[1:]) / s)
+            i = 0
+            while i < n_chunks:
+                self._spi_write(buff[(1 + i * s):(1 + (i + 1) * s)])
+                i += 1
+        else:
+            self._spi_write(buff[1:])
         # -----------------------------------------------------'
 
     def init_display(self):
