@@ -10,7 +10,8 @@ import test_procedures as tp
 DEFAULT_HW_CONFIG = "rpi5"
 CIRCUIT_GUIDE = """
 # ----------------------------------------------------------------,
-[RPi5]                 <---> [Display]
+[RPi2B Compat. Host]   <---> [Display]
+==================================================================
 Pin-19/GPIO-10/MOSI    <---> MOSI (Main-Out-Sub-In)
 Pin-23/GPIO-11/SCLK    <---> SCLK (SPI-Clock)
 Pin-24/GPIO-8/SPI0-CE0 <---> CS/X (SPI-Chip-Select)
@@ -38,6 +39,19 @@ HW_CONFIGS = {
         "rst_pin_id": None,
         "spi_clock_hz": 42_000_000,
         "spi_data_chunk_size": 2048,
+        "circuit_guide": CIRCUIT_GUIDE,
+    },
+
+    "up-squared-v2": {
+        "spidev_device_path": "/dev/spidev2.0",
+        "gpiod_device_path": "/dev/gpiochip5",
+        "dcx_pin_id": 25,
+        "rst_pin_id": None,
+        # Up squared v2 has a bug where SPI speed does not go over 1MHz.
+        # Seems like there is no way around it.
+        # Ref: https://forum.up-community.org/discussion/5032/spi-speed-on-up-squared-6000-does-not-go-over-1mhz
+        "spi_clock_hz": 20_000_000,
+        "spi_data_chunk_size": 0,
         "circuit_guide": CIRCUIT_GUIDE,
     }
 }
