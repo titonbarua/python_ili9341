@@ -7,7 +7,6 @@ from ili9341.ili9341_pyftdi import Ili9341Pyftdi
 import test_procedures as tp
 
 
-DEFAULT_HW_CONFIG = "ft232h"
 CIRCUIT_GUIDE = """
 # ----------------------------------------------------------------,
 [FT232H] <---> [Display]
@@ -34,9 +33,6 @@ HW_CONFIGS = {
 
 
 def run_test_procedures(config_name):
-    if config_name not in HW_CONFIGS:
-        config_name = DEFAULT_HW_CONFIG
-
     print(f"Starting Ili9341Pyftdi display test using config '{config_name}' ...")
     c = HW_CONFIGS[config_name]
 
@@ -62,6 +58,18 @@ def run_test_procedures(config_name):
     tp.test_webcam(lcd)
 
 
+USAGE = (
+    "python3 run_pyftdi_display_test.py {}"
+    .format("|".join(HW_CONFIGS.keys)))
+
 if __name__ == "__main__":
-    config_name = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_HW_CONFIG
+    if len(sys.argv) < 2:
+        print(USAGE)
+        sys.exit(1)
+
+    config_name = sys.argv[1]
+    if config_name not in HW_CONFIGS:
+        print(USAGE)
+        sys.exit(2)
+
     run_test_procedures(config_name)

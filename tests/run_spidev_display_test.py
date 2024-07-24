@@ -98,7 +98,7 @@ USAGE = (
     .format("|".join(HW_CONFIGS.keys)))
 
 if __name__ == "__main__":
-    if len(sys.argv) < 1:
+    if len(sys.argv) < 2:
         print(USAGE)
         sys.exit(1)
 
