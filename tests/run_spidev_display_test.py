@@ -94,8 +94,8 @@ def run_test_procedures(config_name):
 
 
 USAGE = (
-    "python3 run_spidev_display_test.py {}"
-    .format("|".join(HW_CONFIGS.keys)))
+    "USAGE: python3 run_spidev_display_test.py {}"
+    .format("|".join(HW_CONFIGS.keys())))
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
