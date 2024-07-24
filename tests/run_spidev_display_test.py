@@ -7,7 +7,6 @@ from ili9341.ili9341_spidev import Ili9341Spidev
 import test_procedures as tp
 
 
-DEFAULT_HW_CONFIG = "rpi5"
 CIRCUIT_GUIDE = """
 # ----------------------------------------------------------------,
 [RPi2B Compat. Host]   <---> [Display]
@@ -22,6 +21,16 @@ Pin-22/GPIO-25         <---> DC/X (Data/Control Select for ILI9341)
 """
 
 HW_CONFIGS = {
+    "rpi3": {
+        "spidev_device_path": "/dev/spidev0.0",
+        "gpiod_device_path": "/dev/gpiochip0",
+        "dcx_pin_id": 25,
+        "rst_pin_id": None,
+        "spi_clock_hz": 42_000_000,
+        "spi_data_chunk_size": 0,  # No chunking!
+        "circuit_guide": CIRCUIT_GUIDE,
+    },
+
     "rpi5": {
         "spidev_device_path": "/dev/spidev0.0",
         "gpiod_device_path": "/dev/gpiochip4",
@@ -58,9 +67,6 @@ HW_CONFIGS = {
 
 
 def run_test_procedures(config_name):
-    if config_name not in HW_CONFIGS:
-        config_name = DEFAULT_HW_CONFIG
-
     print(f"Starting Ili9341Spidev display test using config '{config_name}' ...")
     c = HW_CONFIGS[config_name]
 
@@ -87,6 +93,18 @@ def run_test_procedures(config_name):
     tp.test_webcam(lcd)
 
 
+USAGE = (
+    "python3 run_spidev_display_test.py {}"
+    .format("|".join(HW_CONFIGS.keys)))
+
 if __name__ == "__main__":
-    config_name = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_HW_CONFIG
+    if len(sys.argv) < 1:
+        print(USAGE)
+        sys.exit(1)
+
+    config_name = sys.argv[1]
+    if config_name not in HW_CONFIGS:
+        print(USAGE)
+        sys.exit(2)
+
     run_test_procedures(config_name)
