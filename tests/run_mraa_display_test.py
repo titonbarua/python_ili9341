@@ -4,7 +4,7 @@ sys.path.append("../src/")
 import time
 
 from ili9341.ili9341_mraa import Ili9341Mraa
-from test_procedures import tp
+import test_procedures as tp
 
 
 RPI_CIRCUIT_GUIDE = """
@@ -29,13 +29,13 @@ HW_CONFIGS = {
         "dcx_pin_id": 22,
         "rst_pin_id": None,
         "spi_clock_hz": 42_000_000,
-        "spi_data_chunk_size": 0,  # No chunking!
+        "spi_data_chunk_size": 4096,
         "circuit_guide": RPI_CIRCUIT_GUIDE,
     },
 }
 
 
-def run_test_procedures():
+def run_test_procedures(config_name):
     print(f"Starting Ili9341Mraa display test using config '{config_name}' ...")
     c = HW_CONFIGS[config_name]
 
@@ -62,8 +62,8 @@ def run_test_procedures():
 
 
 USAGE = (
-    "python3 run_mraa_display_test.py {}"
-    .format("|".join(HW_CONFIGS.keys)))
+    "USAGE: python3 run_mraa_display_test.py {}"
+    .format("|".join(HW_CONFIGS.keys())))
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
