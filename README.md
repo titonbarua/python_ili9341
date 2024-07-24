@@ -12,9 +12,9 @@ automatic partial updates.
 ## Advantages
 
 - Supports a variety of hardware and software interfaces:
-  - spidev + gpiod
-  - mraa
-  - pyftdi
+  - Spidev + Gpiod
+  - Mraa
+  - Pyftdi
 - Fast and efficient buffer update, taking advantage of the partial update
   commands of the ILI9341 chip.
 
@@ -147,10 +147,29 @@ The image and video inside the `tests/` directory are of my daughter. Isn't she
 adorable? ^_^
 
 
+## Some background on why
+
+As part of my graduate research at University of South Carolina, Autonomous
+Field Robotics Lab, my team embarked on a journey to make customized control and
+user interface for an underwater autonomous robot, BlueROV from ground up. To
+save some CPU cycles, using an SPI display seemed like a good idea, instead of
+an HDMI display with Xorg/fbdev.
+
+The Mraa interface was developed at first. Development was done with a Raspberry
+Pi 3B+ and was later deployed on an 'Up Squared' - an X86 SBC.
+
+We had to change the host computer in the middle of the design process and Mraa
+interface didn't have support for the upgraded 'Up Squared V2' SBC. So, we
+switched to Spidev + gpiod interface. Turns out, the Spidev driver for this
+device is buggy and can not go beyond 1MHz. As an workaround, I developed
+another interface based on FT232 USB-to-GPIO interface.
+
+
+
 ## License
 
-This software is distributed under MIT license. Look at `LICENSE` the license
-file for the terms of distribution.
+This software is distributed under MIT license. Look at the `LICENSE` file for
+the terms of distribution.
 
 
 ## Copyright
