@@ -91,7 +91,23 @@ class Ili9341Base(object):
             spi_data_chunk_size=2048,
             partial_update_merge_dist=5,
             madctl_cmd_val=ILI9341_MADCTL_BGR_MODE):
-        """Initialize Ili9341Base class."""
+        """Initialize Ili9341Base class.
+
+        Args:
+
+        - spi_data_chunk_size: (int) Size of the each SPI data transaction. If
+          set to zero, no chunking is used. For some interfaces like Spidev
+          have own buffers where no-chunking might be beneficial. pyftdi will
+          refuse if large buffers are tried without chunking.
+
+        - partial_update_merge_dist: (int) The distance to look for when
+          merging two small partial updates into one.
+
+        - madctl_cmd_val: (int-flags) This is a bitmask that can be used to
+          rotate/flip the display image. Look at the ILI9341 datasheet for
+          more.
+
+        """
         self._height = ILI9341_TFTHEIGHT
         self._width = ILI9341_TFTWIDTH
         self._spi_data_chunk_size = spi_data_chunk_size

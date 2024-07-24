@@ -30,9 +30,28 @@ class Ili9341Spidev(Ili9341Base):
             gpiod_device_path,
             dcx_pin_id,
             rst_pin_id=None,
-            spi_clock_hz=64000000,
+            spi_clock_hz=42_000_000,
             **kwargs):
-        """Initialize Ili9341Spidev class."""
+        """Initialize Ili9341Spidev class.
+
+        Args:
+
+        - spidev_device_path: (str) Path of the spidev device. For example
+          - "/dev/spidev0.0".
+
+        - gpiod_device_path: (str) Path of the gpiod device. For example -
+          "/dev/gpiochip0".
+
+        - dcx_pin_id: (int) GPIO number of the host pin connected to DC/X
+          display pin.
+
+        - rst_pin_id: (int) GPIO number of the host pin connected to the RST
+          pin of the display. Can be set to `None` if this pin is connected to
+          +3.3V, disabling hardware reset.
+
+        - Extra keyword arguments are forwarded to `Ili9341Base` class.
+
+        """
         m = RX_SPIDEV_DEVICE_NUMS.match(spidev_device_path)
         if m is None:
             raise ValueError(

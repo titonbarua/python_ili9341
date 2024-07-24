@@ -21,16 +21,21 @@ class Ili9341Pyftdi(Ili9341Base):
             pyftdi_interface_path,
             dcx_pin_id,
             rst_pin_id=None,
-            spi_clock_hz=64000000,
+            spi_clock_hz=42_000_000,
             **kwargs):
         """Initialize Ili9341Pyftdi class.
 
         Args:
-        - pyftdi_interface_path: (str) A path describing FTDI io interface. E.g.: 'ftdi://ftdi:232h/1'
-        - dcx_pin_id: (int) Pin where display DC/X pin is connected. If it is
-                      connected to FT232H's pin 'D4', pin will be `4`.
-        - rst_pin_id: (int, optional) Pin where display RST pin is connected.
-        - spi_clock_hz: (int) Maximum SPI frequency in Hz supported by the FTDI chip.
+        - pyftdi_interface_path: (str) A path describing FTDI io interface.
+          E.g.: 'ftdi://ftdi:232h/1'
+        - dcx_pin_id: (int) GPIO pin where display DC/X pin is connected. For
+          example, if DC/X is connected to `D4` pin of FT232H board, pin id will
+          be `4`.
+        - rst_pin_id: (int) GPIO pin where display RST pin is connected. Can be
+          set to `None` if hardware reset is not used (pin is connected to +3.3V).
+        - spi_clock_hz: (int) Desired SPI clock frequency, in Hz.
+        - Extra keyword arguments are forwarded to `Ili9341Base` class.
+
         """
         # Create SPI device.
         self._spi_controller = pyftdi.spi.SpiController(cs_count=1)

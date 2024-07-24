@@ -17,9 +17,26 @@ class Ili9341Mraa(Ili9341Base):
             spi_id,
             dcx_pin_id,
             rst_pin_id=None,
-            spi_clock_hz=64000000,
+            spi_clock_hz=42_000_000,
             **kwargs):
-        """Initialize Ili9341Mraa class."""
+        """Initialize Ili9341Mraa class.
+
+        Args:
+
+        - spi_id: (int) Mraa SPI device ID.
+
+        - dcx_pin_id: (int) Mraa GPIO pin id for the DC/X pin. This is not GPIO
+          number, rather the board/machine pin id shown on the leftmost column
+          of `mraa-gpio list`.
+
+        - rst_pin_id: (int) Mraa GPIO pin id for the RST pin. Can be set to
+          `None` if hardware reset is not used (the pin is connected to +3.3V).
+
+        - spi_clock_hz: (int) Desired speed of the SPI clock, in Hz.
+
+        - Extra keyword arguments are forwarded to `Ili9341Base` class.
+
+        """
         # Create SPI device.
         self._spi = mraa.Spi(spi_id)
         self._spi.mode(0)  # SPI mode 0.
